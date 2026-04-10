@@ -1,3 +1,28 @@
+## Redivis build notes
+
+First, clone and `cd` into this repo. Then:
+
+```bash
+# Build the Docker image with all dependencies. Make sure to build for x86 machines (dev machines are arm64)
+sudo docker build --platform=linux/amd64 . -t my-googlesql-image -f Dockerfile
+
+# Start a shell and build
+sudo docker run --init -it my-googlesql-image bash
+
+# Inside the container
+bazel build //googlesql/tools/execute_query:execute_query
+
+# The binary will be at:
+# bazel-bin/googlesql/tools/execute_query/execute_query
+```
+Then copy the binary out:
+```bash
+# From the host, find the container ID
+docker ps -a
+
+# Copy the binary out
+docker cp <container_id>:/path/to/bazel-bin/googlesql/tools/execute_query/execute_query ./googlesql_execute_query
+```
 ## GoogleSQL - Analyzer Framework for SQL
 
 > GoogleSQL was previously named ZetaSQL. Please refer to [this
