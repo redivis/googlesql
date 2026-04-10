@@ -23,6 +23,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "googlesql/base/logging.h"
 #include "googlesql/tools/execute_query/execute_query_tool.h"
@@ -63,7 +64,15 @@ absl::Status RunTool(const std::vector<std::string>& args) {
     return RunExecuteQueryWebServer(absl::GetFlag(FLAGS_port));
   }
 
-  const std::string sql = absl::StrJoin(args, " ");
+  std::string sql;
+  if (args.size() == 1 && args[0] == "-") {
+    // Read SQL from stdin
+    std::ostringstream ss;
+    ss << std::cin.rdbuf();
+    sql = ss.str();
+  } else {
+    sql = absl::StrJoin(args, " ");
+  }
   return ExecuteQuery(sql, config, *writer);
 }
 }  // namespace
@@ -83,7 +92,7 @@ static bool HelpShortFilter(absl::string_view module) {
 int main(int argc, char* argv[]) {
   const char kUsage[] =
       "Usage: execute_query "
-      "{ \"<sql>\" | {--web [--port=<port>] } }\n";
+      "{ \"<sql>\" | - | {--web [--port=<port>] } }\n";
 
   std::vector<std::string> args;
 
