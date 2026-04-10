@@ -7,13 +7,10 @@ First, clone and `cd` into this repo. Then:
 sudo docker build --platform=linux/amd64 . -t my-googlesql-image -f Dockerfile
 
 # Start a shell and build
-sudo docker run --init -it my-googlesql-image bash
-
-# Inside the container
-bazel build //googlesql/tools/execute_query:execute_query
+sudo docker run --platform=linux/amd64 --init -it --entrypoint /bin/bash my-googlesql-image
 
 # The binary will be at:
-# bazel-bin/googlesql/tools/execute_query/execute_query
+# /googlesql/execute_query
 ```
 Then copy the binary out:
 ```bash
@@ -21,7 +18,7 @@ Then copy the binary out:
 docker ps -a
 
 # Copy the binary out
-docker cp <container_id>:/path/to/bazel-bin/googlesql/tools/execute_query/execute_query ./googlesql_execute_query
+docker cp <container_id>:/googlesql/execute_query ./googlesql_execute_query
 ```
 ## GoogleSQL - Analyzer Framework for SQL
 
